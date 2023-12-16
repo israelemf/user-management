@@ -12,7 +12,7 @@ public class User {
     private UUID id;
     @Column(length = 100)
     private String email;
-    @Column(unique = true)
+    @Column(length = 50, unique = true)
     private String login;
     private String password;
 

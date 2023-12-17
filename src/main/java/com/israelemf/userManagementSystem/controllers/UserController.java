@@ -35,7 +35,7 @@ public class UserController {
 
     @PutMapping("/users/{login}")
     public ResponseEntity<User> updateUser(@PathVariable("login") String login, @RequestBody @Valid UserPutDto userPutDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.update(login, userPutDto));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(login, userPutDto));
     }
 
     @DeleteMapping("/users/{login}")

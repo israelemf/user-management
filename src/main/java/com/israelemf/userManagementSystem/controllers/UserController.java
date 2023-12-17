@@ -1,6 +1,7 @@
 package com.israelemf.userManagementSystem.controllers;
 
-import com.israelemf.userManagementSystem.dtos.user.UserRequestDto;
+import com.israelemf.userManagementSystem.dtos.user.UserPostDto;
+import com.israelemf.userManagementSystem.dtos.user.UserPutDto;
 import com.israelemf.userManagementSystem.dtos.user.UserResponseDto;
 import com.israelemf.userManagementSystem.entities.User;
 import com.israelemf.userManagementSystem.services.UserService;
@@ -25,16 +26,20 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> saveUser(@RequestBody @Valid UserRequestDto userRequestDto) {
+    public ResponseEntity<User> saveUser(@RequestBody @Valid UserPostDto userPostDto) {
         var user = new User();
-        // Conversão de DTO para User
-        BeanUtils.copyProperties(userRequestDto, user);
+        BeanUtils.copyProperties(userPostDto, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
     }
 
+    @PutMapping("/users/{login}")
+    public ResponseEntity<User> updateUser(@PathVariable("login") String login, @RequestBody @Valid UserPutDto userPutDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.update(login, userPutDto));
+    }
+
     @DeleteMapping("/users/{login}")
-    public ResponseEntity<String> deleteUserByName(@PathVariable("login") String login) {
+    public ResponseEntity<String> deleteUserByLogin(@PathVariable("login") String login) {
         this.userService.deleteByLogin(login);
         return ResponseEntity.status(HttpStatus.OK).body("Usuário " + login + " excluído com suceso!");
     }

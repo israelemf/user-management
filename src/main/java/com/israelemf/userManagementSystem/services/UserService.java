@@ -1,7 +1,12 @@
 package com.israelemf.userManagementSystem.services;
 
+import com.israelemf.userManagementSystem.dtos.user.UserPutDto;
+import com.israelemf.userManagementSystem.dtos.user.UserResponseDto;
 import com.israelemf.userManagementSystem.entities.User;
 import com.israelemf.userManagementSystem.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,28 +20,35 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public List<User> listAllUsers() {
-        return this.userRepository.findAll();
+    public List<UserResponseDto> listAllUsers() {
+        return this.userRepository.findAllUserResponseDto();
     }
 
     public User save(User user) {
         String encryptedPassword = this.bCryptPasswordEncoder.encode(user.getPassword());
-
         user.setPassword(encryptedPassword);
+
         user = this.userRepository.save(user);
 
         return user;
     }
 
-    public User update(User user) {
-        return this.userRepository.save(user);
+    @Transactional
+    public User update(String login, UserPutDto userPutDto) {
+        User userToUpdate = this.userRepository.findUserByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(login + " não encontrado!"));
+
+        BeanUtils.copyProperties(userPutDto, userToUpdate);
+
+        return this.userRepository.save(userToUpdate);
     }
 
-    public User deleteByLogin(String login) {
-        return this.userRepository.deleteByLogin(login);
+    @Transactional
+    public void deleteByLogin(String login) {
+       this.userRepository.deleteByLogin(login);
     }
 
-    public String deleteAllUsers() {
+    public String deleteAll() {
         try {
             this.userRepository.deleteAll();
         } catch (Exception exception) {

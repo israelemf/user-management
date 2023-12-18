@@ -7,11 +7,17 @@ import com.israelemf.userManagementSystem.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyDescriptor;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -38,7 +44,7 @@ public class UserService {
         User userToUpdate = this.userRepository.findUserByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException(login + " não encontrado!"));
 
-        BeanUtils.copyProperties(userPutDto, userToUpdate);
+        BeanUtils.copyProperties(userPutDto, userToUpdate, getNullPropertyNames(userPutDto));
 
         return this.userRepository.save(userToUpdate);
     }
@@ -56,5 +62,18 @@ public class UserService {
         }
 
         return "Usuários deletados!";
+    }
+
+    // Função para obter nomes de propriedades nulas em um objeto
+    private String[] getNullPropertyNames(Object json) {
+        final BeanWrapper jsonData = new BeanWrapperImpl(json);
+        Set<String> NullPropertiesNames = new HashSet<>();
+
+        for (PropertyDescriptor propertyDescriptor : jsonData.getPropertyDescriptors()) {
+            if (jsonData.getPropertyValue(propertyDescriptor.getName()) == null) {
+                NullPropertiesNames.add(propertyDescriptor.getName());
+            }
+        }
+        return NullPropertiesNames.toArray(new String[0]);
     }
 }

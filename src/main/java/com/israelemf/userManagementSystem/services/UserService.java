@@ -4,6 +4,7 @@ import com.israelemf.userManagementSystem.dtos.user.UserPutDto;
 import com.israelemf.userManagementSystem.dtos.user.UserResponseDto;
 import com.israelemf.userManagementSystem.entities.User;
 import com.israelemf.userManagementSystem.repositories.UserRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +32,12 @@ public class UserService {
     }
 
     public User save(User user) {
+        String login = user.getLogin();
+
+        if (this.userRepository.findUserByLogin(login).isPresent()) {
+            throw new EntityExistsException("Login " + login + " already exists!");
+        }
+
         String encryptedPassword = this.bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
 
@@ -42,7 +49,7 @@ public class UserService {
     @Transactional
     public User update(String login, UserPutDto userPutDto) {
         User userToUpdate = this.userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new EntityNotFoundException(login + " não encontrado!"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found!"));
 
         BeanUtils.copyProperties(userPutDto, userToUpdate, getNullPropertyNames(userPutDto));
 
@@ -51,7 +58,7 @@ public class UserService {
 
     @Transactional
     public void deleteByLogin(String login) {
-       this.userRepository.deleteByLogin(login);
+        this.userRepository.deleteByLogin(login);
     }
 
     public String deleteAll() {

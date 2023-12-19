@@ -1,4 +1,4 @@
-package com.israelemf.userManagementSystem.security;
+package com.israelemf.userManagementSystem.configurations.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

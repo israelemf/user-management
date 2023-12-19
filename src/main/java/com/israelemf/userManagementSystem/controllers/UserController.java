@@ -41,6 +41,6 @@ public class UserController {
     @DeleteMapping("/users/{login}")
     public ResponseEntity<String> deleteUserByLogin(@PathVariable("login") String login) {
         this.userService.deleteByLogin(login);
-        return ResponseEntity.status(HttpStatus.OK).body("Usuário " + login + " excluído com suceso!");
+        return ResponseEntity.status(HttpStatus.OK).body("Usuário " + login + " excluído com sucesso!");
     }
 }

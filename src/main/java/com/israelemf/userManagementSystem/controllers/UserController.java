@@ -40,7 +40,6 @@ public class UserController {
 
     @DeleteMapping("/users/{login}")
     public ResponseEntity<String> deleteUserByLogin(@PathVariable("login") String login) {
-        this.userService.deleteByLogin(login);
-        return ResponseEntity.status(HttpStatus.OK).body(login + " user successfully deleted!");
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.deleteByLogin(login));
     }
 }

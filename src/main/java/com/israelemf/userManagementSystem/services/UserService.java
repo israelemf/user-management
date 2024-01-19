@@ -57,8 +57,13 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteByLogin(String login) {
-        this.userRepository.deleteByLogin(login);
+    public String deleteByLogin(String login) {
+        User userToDelete = this.userRepository.findUserByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+
+        this.userRepository.deleteByLogin(userToDelete.getLogin());
+
+        return "User " + userToDelete.getLogin() + " deleted!";
     }
 
     public String deleteAll() {

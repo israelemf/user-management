@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     @Modifying
     @Query("DELETE FROM User user WHERE user.login = :login")
-    void deleteByLogin(@Param("login") String login);
+    int deleteByLogin(@Param("login") String login);
 
     @Query("SELECT NEW com.israelemf.userManagementSystem.dtos.user.UserResponseDto(user.id, user.login, user.email) FROM User user")
     List<UserResponseDto> findAllUserResponseDto();
